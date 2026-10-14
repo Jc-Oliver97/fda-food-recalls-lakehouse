@@ -1,0 +1,1093 @@
+{
+  "datasets": [
+    {
+      "name": "0734acd3",
+      "displayName": "gold_recalls_current",
+      "config": {
+        "version": "1.1",
+        "source": "workspace.food_safety.gold_recalls_current"
+      }
+    },
+    {
+      "name": "0e40e8be",
+      "displayName": "gold_recalls_by_year_hazard",
+      "config": {
+        "version": "1.1",
+        "source": "workspace.food_safety.gold_recalls_by_year_hazard",
+        "dimensions": [
+          {
+            "name": "report_year",
+            "expr": "source.report_year"
+          },
+          {
+            "name": "hazard_category",
+            "expr": "source.hazard_category"
+          },
+          {
+            "name": "classification",
+            "expr": "source.classification"
+          }
+        ],
+        "measures": [
+          {
+            "name": "recalls",
+            "expr": "SUM(source.recalls)"
+          },
+          {
+            "name": "open_recalls",
+            "expr": "SUM(source.open_recalls)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "b9ef7c5e",
+      "displayName": "gold_recall_duration",
+      "config": {
+        "version": "1.1",
+        "source": "workspace.food_safety.gold_recall_duration",
+        "dimensions": [
+          {
+            "name": "hazard_category",
+            "expr": "source.hazard_category"
+          },
+          {
+            "name": "classification",
+            "expr": "source.classification"
+          }
+        ],
+        "measures": [
+          {
+            "name": "avg_days_open",
+            "expr": "AVG(source.avg_days_open)"
+          },
+          {
+            "name": "median_days_open",
+            "expr": "AVG(source.median_days_open)"
+          },
+          {
+            "name": "closed_recalls",
+            "expr": "SUM(source.closed_recalls)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "afefd805",
+      "displayName": "gold_top_firms",
+      "config": {
+        "version": "1.1",
+        "source": "workspace.food_safety.gold_top_firms",
+        "dimensions": [
+          {
+            "name": "recalling_firm",
+            "expr": "source.recalling_firm",
+            "displayName": "Recalling Firm"
+          }
+        ],
+        "measures": [
+          {
+            "name": "total_recalls",
+            "expr": "SUM(source.total_recalls)",
+            "displayName": "Total Recalls"
+          },
+          {
+            "name": "class_i_recalls",
+            "expr": "SUM(source.class_i_recalls)",
+            "displayName": "Class I Recalls"
+          },
+          {
+            "name": "distinct_hazards",
+            "expr": "SUM(source.distinct_hazards)",
+            "displayName": "Distinct Hazards"
+          }
+        ]
+      }
+    },
+    {
+      "name": "563eed28",
+      "displayName": "gold_dq_expectations",
+      "config": {
+        "version": "1.1",
+        "source": "workspace.food_safety.gold_dq_expectations",
+        "dimensions": [
+          {
+            "name": "dataset",
+            "expr": "source.dataset",
+            "displayName": "Dataset"
+          },
+          {
+            "name": "expectation",
+            "expr": "source.expectation",
+            "displayName": "Expectation"
+          },
+          {
+            "name": "last_run",
+            "expr": "source.last_run",
+            "displayName": "Last Run"
+          }
+        ],
+        "measures": [
+          {
+            "name": "passed_records",
+            "expr": "SUM(source.passed_records)",
+            "displayName": "Passed Records"
+          },
+          {
+            "name": "failed_records",
+            "expr": "SUM(source.failed_records)",
+            "displayName": "Failed Records"
+          },
+          {
+            "name": "failure_pct",
+            "expr": "AVG(source.failure_pct)",
+            "displayName": "Failure %",
+            "format": {
+              "type": "percentage",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 2.0
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "063f9ffd",
+      "displayName": "silver_recall_events_quarantine",
+      "config": {
+        "version": "1.1",
+        "source": "workspace.food_safety.silver_recall_events_quarantine",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "8b14c32c",
+      "displayName": "main-kpis",
+      "queryLines": [
+        "SELECT\r\n",
+        "  COUNT(*)                                                    AS total_recalls,\r\n",
+        "  COUNT_IF(status = 'Ongoing')                                AS open_recalls,\r\n",
+        "  ROUND(100 * COUNT_IF(classification = 'Class I') / COUNT(*), 1) AS pct_class_i\r\n",
+        "FROM workspace.food_safety.gold_recalls_current;\r\n"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "f68d767f",
+      "displayName": "Recall Overview",
+      "layout": [
+        {
+          "widget": {
+            "name": "d6e98de3",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# Recall Overview"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "80c56534",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "8b14c32c",
+                  "fields": [
+                    {
+                      "name": "total_recalls",
+                      "expression": "`total_recalls`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Total Recalls"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "total_recalls"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 4,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "open_recalls_counter",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "8b14c32c",
+                  "fields": [
+                    {
+                      "name": "open_recalls",
+                      "expression": "`open_recalls`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Open Recalls"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "open_recalls"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 4,
+            "width": 4,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "pct_class_i_counter",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "8b14c32c",
+                  "fields": [
+                    {
+                      "name": "pct_class_i",
+                      "expression": "`pct_class_i`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Class I %"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "pct_class_i"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 4,
+            "width": 4,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "recalls-by-year",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0e40e8be",
+                  "fields": [
+                    {
+                      "name": "hazard_category",
+                      "expression": "`hazard_category`"
+                    },
+                    {
+                      "name": "report_year",
+                      "expression": "`report_year`"
+                    },
+                    {
+                      "name": "measure(recalls)",
+                      "expression": "MEASURE(`recalls`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Recalls by Year",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "report_year",
+                  "displayName": "Year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(recalls)",
+                  "displayName": "Recalls",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "hazard_category",
+                  "displayName": "Hazard Catergory",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "recalls_by_year_hazard",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0e40e8be",
+                  "fields": [
+                    {
+                      "name": "hazard_category",
+                      "expression": "`hazard_category`"
+                    },
+                    {
+                      "name": "measure(recalls)",
+                      "expression": "MEASURE(`recalls`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Recalls by Hazard Category",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "measure(recalls)",
+                  "displayName": "Recalls",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "hazard_category",
+                  "displayName": "Hazard",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                },
+                "color": {
+                  "fieldName": "hazard_category",
+                  "displayName": "Hazard Category",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 14,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "classification_filter",
+            "queries": [
+              {
+                "name": "dashboards/01f1c741e0f1170f96409f224ce144e0/datasets/01f1c74235621492b044e239e380df86_classification",
+                "query": {
+                  "datasetName": "0e40e8be",
+                  "fields": [
+                    {
+                      "name": "classification",
+                      "expression": "`classification`"
+                    },
+                    {
+                      "name": "classification_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Classification",
+                  "fields": []
+                }
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "classification",
+                    "queryName": "dashboards/01f1c741e0f1170f96409f224ce144e0/datasets/01f1c74235621492b044e239e380df86_classification"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "year_filter",
+            "queries": [
+              {
+                "name": "dashboards/01f1c741e0f1170f96409f224ce144e0/datasets/01f1c74235621492b044e239e380df86_report_year",
+                "query": {
+                  "datasetName": "0e40e8be",
+                  "fields": [
+                    {
+                      "name": "report_year",
+                      "expression": "`report_year`"
+                    },
+                    {
+                      "name": "report_year_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Year",
+                  "fields": []
+                }
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "report_year",
+                    "queryName": "dashboards/01f1c741e0f1170f96409f224ce144e0/datasets/01f1c74235621492b044e239e380df86_report_year"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "08061e6c",
+      "displayName": "Recall Lifecycle",
+      "layout": [
+        {
+          "widget": {
+            "name": "06e2d843",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# Recall Lifecycle"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "2b0f5e6c",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "b9ef7c5e",
+                  "fields": [
+                    {
+                      "name": "hazard_category",
+                      "expression": "`hazard_category`"
+                    },
+                    {
+                      "name": "measure(avg_days_open)",
+                      "expression": "MEASURE(`avg_days_open`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Days Open by Hazard Category",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "measure(avg_days_open)",
+                  "displayName": "Days of Open Recalls",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "hazard_category",
+                  "displayName": "Hazard",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                },
+                "color": {
+                  "fieldName": "hazard_category",
+                  "displayName": "Hazard Category",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "6607f998",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "b9ef7c5e",
+                  "fields": [
+                    {
+                      "name": "hazard_category",
+                      "expression": "`hazard_category`"
+                    },
+                    {
+                      "name": "classification",
+                      "expression": "`classification`"
+                    },
+                    {
+                      "name": "measure(median_days_open)",
+                      "expression": "MEASURE(`median_days_open`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Median Days of Open Recalls by Class",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "classification",
+                  "displayName": "Classification",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(median_days_open)",
+                  "displayName": "Days Open Recall",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "hazard_category",
+                  "displayName": "Hazard Category",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "9683dfe6",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "afefd805",
+                  "fields": [
+                    {
+                      "name": "recalling_firm",
+                      "expression": "`recalling_firm`"
+                    },
+                    {
+                      "name": "measure(class_i_recalls)",
+                      "expression": "MEASURE(`class_i_recalls`)"
+                    },
+                    {
+                      "name": "measure(total_recalls)",
+                      "expression": "MEASURE(`total_recalls`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Top Firms by Class I Recalls"
+              },
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "recalling_firm",
+                    "headerAlignment": "left",
+                    "useForSearch": true
+                  },
+                  {
+                    "fieldName": "measure(class_i_recalls)",
+                    "headerAlignment": "right",
+                    "useForSearch": false
+                  },
+                  {
+                    "fieldName": "measure(total_recalls)",
+                    "headerAlignment": "right",
+                    "useForSearch": false
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 12,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "271c4cd7",
+      "displayName": "Data Quality",
+      "layout": [
+        {
+          "widget": {
+            "name": "53928e30",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# Data Quality"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "d09fbf03",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "563eed28",
+                  "fields": [
+                    {
+                      "name": "dataset",
+                      "expression": "`dataset`"
+                    },
+                    {
+                      "name": "expectation",
+                      "expression": "`expectation`"
+                    },
+                    {
+                      "name": "measure(passed_records)",
+                      "expression": "MEASURE(`passed_records`)"
+                    },
+                    {
+                      "name": "measure(failed_records)",
+                      "expression": "MEASURE(`failed_records`)"
+                    },
+                    {
+                      "name": "measure(failure_pct)",
+                      "expression": "MEASURE(`failure_pct`)"
+                    },
+                    {
+                      "name": "last_run",
+                      "expression": "`last_run`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Data Quality Rules",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "dataset"
+                  },
+                  {
+                    "fieldName": "expectation"
+                  },
+                  {
+                    "fieldName": "measure(passed_records)"
+                  },
+                  {
+                    "fieldName": "measure(failed_records)"
+                  },
+                  {
+                    "fieldName": "measure(failure_pct)"
+                  },
+                  {
+                    "fieldName": "last_run"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "df4abb94",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "563eed28",
+                  "fields": [
+                    {
+                      "name": "expectation",
+                      "expression": "`expectation`"
+                    },
+                    {
+                      "name": "measure(failure_pct)",
+                      "expression": "MEASURE(`failure_pct`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Failure % by Rule",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "measure(failure_pct)",
+                  "displayName": "% of Failures",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "expectation",
+                  "displayName": "Rule",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                },
+                "color": {
+                  "fieldName": "expectation",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "7743f2be",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "063f9ffd",
+                  "fields": [
+                    {
+                      "name": "failed_rule",
+                      "expression": "`failed_rule`"
+                    },
+                    {
+                      "name": "measure(count)",
+                      "expression": "MEASURE(`count`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Quarantine Rows by Motive",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "measure(count)",
+                  "displayName": "Rows",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "failed_rule",
+                  "displayName": "Motive",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                },
+                "color": {
+                  "fieldName": "failed_rule",
+                  "displayName": "Motive",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 8,
+            "width": 6,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}

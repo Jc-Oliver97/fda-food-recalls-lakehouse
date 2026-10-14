@@ -1,0 +1,25 @@
+resources:
+  jobs:
+    food_safety_recalls_job:
+      name: food_safety_recalls_job
+      tasks:
+        - task_key: 01_release_next_batch
+          notebook_task:
+            notebook_path: /Workspace/Users/<your-user>/fda-food-recalls-lakehouse/notebooks/02_release_next_batch
+            base_parameters:
+              batches_to_release: "1"
+            source: WORKSPACE
+        - task_key: 02_run_food_safety_recalls_pipeline
+          depends_on:
+            - task_key: 01_release_next_batch
+          pipeline_task:
+            pipeline_id: 1e8b5f6b-b706-4ad9-b97b-9bb79d9a074c
+        - task_key: 03_data_quality_snapshot
+          depends_on:
+            - task_key: 02_run_food_safety_recalls_pipeline
+          notebook_task:
+            notebook_path: /Workspace/Users/<your-user>/fda-food-recalls-lakehouse/notebooks/03_data_quality_snapshot
+            source: WORKSPACE
+      queue:
+        enabled: true
+      performance_target: PERFORMANCE_OPTIMIZED
